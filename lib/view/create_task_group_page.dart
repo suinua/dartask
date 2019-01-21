@@ -1,24 +1,21 @@
-import 'package:dartask/bloc/task_group_list_bloc.dart';
+import 'package:dartask/bloc/task_group_list_bloc_provider.dart';
 import 'package:dartask/model/task_group.dart';
 import 'package:flutter/material.dart';
 
 class CreateTaskGroupPage extends StatefulWidget {
-  final TaskGroupListBloc bloc;
-
-  const CreateTaskGroupPage({Key key, @required this.bloc}) : super(key: key);
-
   _CreateTaskGroupPageState createState() => _CreateTaskGroupPageState();
 }
 
 class _CreateTaskGroupPageState extends State<CreateTaskGroupPage> {
-  final TextEditingController _titleTextController = TextEditingController();
+  String _titleText = '';
 
   bool _canSave() {
-    return _titleTextController.text.isNotEmpty;
+    return _titleText.isNotEmpty;
   }
 
   @override
   Widget build(BuildContext context) {
+    final bloc = TaskGroupListBlocProvider.of(context);
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
@@ -31,7 +28,7 @@ class _CreateTaskGroupPageState extends State<CreateTaskGroupPage> {
               onPressed: _canSave()
                   ? () {
                       Navigator.pop(context);
-                      widget.bloc.increment.add(TaskGroup(_titleTextController.text));
+                      bloc.increment.add(TaskGroup(_titleText));
                     }
                   : null,
               child: Text('＋ 追加'),
@@ -46,7 +43,11 @@ class _CreateTaskGroupPageState extends State<CreateTaskGroupPage> {
         children: <Widget>[
           Expanded(
             child: TextField(
-              controller: _titleTextController,
+              onChanged: (value){
+                setState(() {
+                  _titleText = value;
+                });
+              },
             ),
           ),
         ],

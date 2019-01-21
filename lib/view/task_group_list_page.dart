@@ -1,21 +1,14 @@
 import 'package:dartask/bloc/task_group_list_bloc.dart';
+import 'package:dartask/bloc/task_group_list_bloc_provider.dart';
 import 'package:dartask/model/task_group.dart';
 import 'package:dartask/view/create_task_group_page.dart';
 import 'package:flutter/material.dart';
 
-class TaskGroupsPage extends StatefulWidget {
-  final TaskGroupListBloc bloc;
-
-  const TaskGroupsPage({Key key, @required this.bloc}) : super(key: key);
-
-  _TaskGroupsPageState createState() => _TaskGroupsPageState();
-}
-
-class _TaskGroupsPageState extends State<TaskGroupsPage> {
-  final List<TaskGroup> taskGroupList = <TaskGroup>[];
-
+class TaskGroupsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final bloc = TaskGroupListBlocProvider.of(context);
+
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       floatingActionButton: FloatingActionButton.extended(
@@ -26,8 +19,7 @@ class _TaskGroupsPageState extends State<TaskGroupsPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (BuildContext context) =>
-                    CreateTaskGroupPage(bloc: widget.bloc)),
+                builder: (BuildContext context) => CreateTaskGroupPage()),
           );
         },
       ),
@@ -51,7 +43,7 @@ class _TaskGroupsPageState extends State<TaskGroupsPage> {
           Container(
             height: 150,
             child: StreamBuilder(
-              stream: widget.bloc.outList,
+              stream: bloc.outList,
               builder: (BuildContext context, snapshot) {
                 return _buildTaskGroupList(context, snapshot.data);
               },
