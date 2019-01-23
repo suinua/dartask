@@ -11,6 +11,8 @@ class TaskListPage extends StatefulWidget {
 }
 
 class _TaskListPageState extends State<TaskListPage> {
+  bool _isOpenedCompleteTaskList = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,11 +37,31 @@ class _TaskListPageState extends State<TaskListPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            IconButton(icon: Icon(Icons.menu), onPressed: () {}),
+            Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                IconButton(icon: Icon(Icons.menu), onPressed: () {}),
+                IconButton(
+                  icon: Icon(Icons.keyboard_arrow_up),
+                  onPressed: () {
+                    setState(() {
+                      _isOpenedCompleteTaskList = !_isOpenedCompleteTaskList;
+                    });
+                  },
+                ),
+              ],
+            ),
+            AnimatedContainer(
+                duration: Duration(milliseconds: 300),
+                height: _isOpenedCompleteTaskList ? 200 : 0,
+                child: _buildTaskList(widget.taskGroup
+                    .getTaskList()
+                    .where((Task task) => task.isComplete)
+                    .toList())),
           ],
         ),
       ),
@@ -48,7 +70,11 @@ class _TaskListPageState extends State<TaskListPage> {
       ),
       body: Column(
         children: <Widget>[
-          Expanded(child: _buildTaskList(widget.taskGroup.getTaskList())),
+          Expanded(
+              child: _buildTaskList(widget.taskGroup
+                  .getTaskList()
+                  .where((Task task) => !task.isComplete)
+                  .toList())),
         ],
       ),
     );
@@ -58,7 +84,9 @@ class _TaskListPageState extends State<TaskListPage> {
     return ListView.builder(
       itemCount: taskList.length,
       itemBuilder: (BuildContext context, int index) {
-        return taskList[index].asWidget();
+        return taskList[index].asWidget(update: () {
+          setState(() {});
+        });
       },
     );
   }
@@ -88,7 +116,7 @@ class _CreateTaskBottomSheetState extends State<_CreateTaskBottomSheet> {
         children: <Widget>[
           Expanded(
             child: TextField(
-              onChanged: (value){
+              onChanged: (value) {
                 setState(() {
                   _newTaskText = value;
                 });
