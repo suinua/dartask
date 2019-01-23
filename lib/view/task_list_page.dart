@@ -7,11 +7,12 @@ class TaskListPage extends StatefulWidget {
 
   const TaskListPage({Key key, @required this.taskGroup}) : super(key: key);
 
+  @override
   _TaskListPageState createState() => _TaskListPageState();
 }
 
 class _TaskListPageState extends State<TaskListPage> {
-  bool _isOpenedCompleteTaskList = false;
+  bool showCompleted = false;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +50,7 @@ class _TaskListPageState extends State<TaskListPage> {
                   icon: Icon(Icons.keyboard_arrow_up),
                   onPressed: () {
                     setState(() {
-                      _isOpenedCompleteTaskList = !_isOpenedCompleteTaskList;
+                      showCompleted = !showCompleted;
                     });
                   },
                 ),
@@ -57,7 +58,7 @@ class _TaskListPageState extends State<TaskListPage> {
             ),
             AnimatedContainer(
                 duration: Duration(milliseconds: 300),
-                height: _isOpenedCompleteTaskList ? 200 : 0,
+                height: showCompleted ? 200 : 0,
                 child: _buildTaskList(widget.taskGroup
                     .getTaskList()
                     .where((Task task) => task.isComplete)
@@ -94,9 +95,7 @@ class _TaskListPageState extends State<TaskListPage> {
 
 class _CreateTaskBottomSheet extends StatefulWidget {
   @override
-  _CreateTaskBottomSheetState createState() {
-    return new _CreateTaskBottomSheetState();
-  }
+  _CreateTaskBottomSheetState createState() =>  _CreateTaskBottomSheetState();
 }
 
 class _CreateTaskBottomSheetState extends State<_CreateTaskBottomSheet> {

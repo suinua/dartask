@@ -25,9 +25,7 @@ class _TaskWidget extends StatefulWidget {
   _TaskWidget({Key key, this.task, this.update}) : super(key: key);
 
   @override
-  _TaskWidgetState createState() {
-    return new _TaskWidgetState();
-  }
+  _TaskWidgetState createState() => _TaskWidgetState();
 }
 
 class _TaskWidgetState extends State<_TaskWidget> {
