@@ -9,10 +9,10 @@ class CreateTaskGroupPage extends StatefulWidget {
 }
 
 class _CreateTaskGroupPageState extends State<CreateTaskGroupPage> {
-  String _titleText = '';
+  String titleText = '';
 
   bool _canSave() {
-    return _titleText.isNotEmpty;
+    return titleText.isNotEmpty;
   }
 
   @override
@@ -34,7 +34,7 @@ class _CreateTaskGroupPageState extends State<CreateTaskGroupPage> {
               onPressed: _canSave()
                   ? () {
                       Navigator.pop(context);
-                      bloc.addGroup.add(TaskGroup(_titleText));
+                      bloc.addGroup.add(TaskGroup(titleText));
                     }
                   : null,
               child: Text('save'),
@@ -46,7 +46,8 @@ class _CreateTaskGroupPageState extends State<CreateTaskGroupPage> {
         ],
       ),
       body: GestureDetector(
-        onTap: (){
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
         },
         child: Column(
@@ -83,26 +84,22 @@ class _CreateTaskGroupPageState extends State<CreateTaskGroupPage> {
                 ),
               ],
             ),
-
             Padding(padding: const EdgeInsets.only(bottom: 50)),
-
-            Expanded(
-              child: Theme(
-                data: ThemeData(
-                  primaryColor: WidgetColors.border,
+            Theme(
+              data: ThemeData(
+                primaryColor: WidgetColors.border,
+              ),
+              child: TextField(
+                decoration: InputDecoration(
+                  labelText: 'Title',
+                  fillColor: WidgetColors.border,
+                  border: OutlineInputBorder(),
                 ),
-                child: TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Title',
-                    fillColor: WidgetColors.border,
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      _titleText = value;
-                    });
-                  },
-                ),
+                onChanged: (value) {
+                  setState(() {
+                    titleText = value;
+                  });
+                },
               ),
             ),
           ],

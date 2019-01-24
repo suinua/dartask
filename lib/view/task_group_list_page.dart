@@ -36,7 +36,8 @@ class TaskGroupsPage extends StatelessWidget {
         ),
       ),
       body: GestureDetector(
-        onTap: (){
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
         },
         child: Column(
@@ -91,7 +92,10 @@ class TaskGroupsPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                IconButton(icon: const Icon(Icons.search), onPressed: () {})
+                Card(
+                  child: IconButton(
+                      icon: const Icon(Icons.search), onPressed: () {}),
+                )
               ],
             ),
             Container(
