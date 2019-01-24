@@ -45,63 +45,68 @@ class _CreateTaskGroupPageState extends State<CreateTaskGroupPage> {
           )
         ],
       ),
-      body: Column(
-        children: <Widget>[
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Expanded(
-                flex: 1,
-                child: Container(
-                  color: Colors.grey,
-                  height: 1.5,
+      body: GestureDetector(
+        onTap: (){
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: Column(
+          children: <Widget>[
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    color: Colors.grey,
+                    height: 1.5,
+                  ),
                 ),
-              ),
-              Expanded(
-                flex: 4,
-                child: Center(
-                  child: Text(
-                    'New Task Group',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30,
+                Expanded(
+                  flex: 4,
+                  child: Center(
+                    child: Text(
+                      'New Task Group',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Container(
-                  color: Colors.grey,
-                  height: 1.5,
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    color: Colors.grey,
+                    height: 1.5,
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
 
-          Padding(padding: const EdgeInsets.only(bottom: 50)),
+            Padding(padding: const EdgeInsets.only(bottom: 50)),
 
-          Expanded(
-            child: Theme(
-              data: ThemeData(
-                primaryColor: WidgetColors.border,
-              ),
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText: 'Title',
-                  fillColor: WidgetColors.border,
-                  border: OutlineInputBorder(),
+            Expanded(
+              child: Theme(
+                data: ThemeData(
+                  primaryColor: WidgetColors.border,
                 ),
-                onChanged: (value) {
-                  setState(() {
-                    _titleText = value;
-                  });
-                },
+                child: TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Title',
+                    fillColor: WidgetColors.border,
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _titleText = value;
+                    });
+                  },
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

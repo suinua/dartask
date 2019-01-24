@@ -35,51 +35,76 @@ class TaskGroupsPage extends StatelessWidget {
           ],
         ),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: <Widget>[
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Expanded(
-                flex: 1,
-                child: Container(
-                  color: Colors.grey,
-                  height: 1.5,
+      body: GestureDetector(
+        onTap: (){
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    color: Colors.grey,
+                    height: 1.5,
+                  ),
                 ),
-              ),
-              Expanded(
-                flex: 4,
-                child: Center(
-                  child: Text(
-                    'Task Group\'s',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 40,
+                Expanded(
+                  flex: 4,
+                  child: Center(
+                    child: Text(
+                      'Task Group\'s',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 40,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Container(
-                  color: Colors.grey,
-                  height: 1.5,
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    color: Colors.grey,
+                    height: 1.5,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Container(
-            height: 150,
-            child: StreamBuilder(
-              stream: bloc.outList,
-              builder: (BuildContext context, snapshot) {
-                return _buildTaskGroupList(context, snapshot.data);
-              },
+              ],
             ),
-          ),
-        ],
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Theme(
+                    data: ThemeData(
+                      primaryColor: WidgetColors.border,
+                    ),
+                    child: TextField(
+                      autofocus: false,
+                      decoration: InputDecoration(
+                        labelText: 'Search',
+                        fillColor: WidgetColors.border,
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
+                ),
+                IconButton(icon: const Icon(Icons.search), onPressed: () {})
+              ],
+            ),
+            Container(
+              height: 150,
+              child: StreamBuilder(
+                stream: bloc.outList,
+                builder: (BuildContext context, snapshot) {
+                  return _buildTaskGroupList(context, snapshot.data);
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
