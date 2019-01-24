@@ -1,5 +1,6 @@
 import 'package:dartask/model/task.dart';
 import 'package:dartask/model/task_group.dart';
+import 'package:dartask/widget_colors.dart';
 import 'package:flutter/material.dart';
 
 class TaskListPage extends StatefulWidget {
@@ -20,6 +21,7 @@ class _TaskListPageState extends State<TaskListPage> {
       resizeToAvoidBottomPadding: false,
       floatingActionButton: FloatingActionButton.extended(
         elevation: 4.0,
+        backgroundColor: WidgetColors.button,
         icon: const Icon(Icons.add),
         label: Text('Task'),
         onPressed: () {
@@ -47,7 +49,7 @@ class _TaskListPageState extends State<TaskListPage> {
               children: <Widget>[
                 IconButton(icon: Icon(Icons.menu), onPressed: () {}),
                 IconButton(
-                  icon: Icon(Icons.keyboard_arrow_up),
+                  icon: showCompleted ? Icon(Icons.keyboard_arrow_down) : Icon(Icons.keyboard_arrow_up),
                   onPressed: () {
                     setState(() {
                       showCompleted = !showCompleted;
@@ -67,10 +69,27 @@ class _TaskListPageState extends State<TaskListPage> {
         ),
       ),
       appBar: AppBar(
-        title: Text(widget.taskGroup.title),
+        elevation: 0.0,
+        backgroundColor: Colors.white30,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.close, color: Colors.black),
+        ),
       ),
       body: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+          Center(
+            child: Text(
+              widget.taskGroup.title,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 40,
+              ),
+            ),
+          ),
+          Divider(),
           Expanded(
               child: _buildTaskList(widget.taskGroup
                   .getTaskList()
@@ -95,7 +114,7 @@ class _TaskListPageState extends State<TaskListPage> {
 
 class _CreateTaskBottomSheet extends StatefulWidget {
   @override
-  _CreateTaskBottomSheetState createState() =>  _CreateTaskBottomSheetState();
+  _CreateTaskBottomSheetState createState() => _CreateTaskBottomSheetState();
 }
 
 class _CreateTaskBottomSheetState extends State<_CreateTaskBottomSheet> {
@@ -123,7 +142,7 @@ class _CreateTaskBottomSheetState extends State<_CreateTaskBottomSheet> {
             ),
           ),
           RaisedButton(
-            color: Colors.orangeAccent,
+            color: WidgetColors.button,
             onPressed: canSave()
                 ? () {
                     Navigator.pop(context, Task(_newTaskText));

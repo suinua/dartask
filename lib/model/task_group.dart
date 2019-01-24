@@ -32,6 +32,7 @@ class TaskGroup {
             children: <Widget>[
               Text(
                 this.title,
+                textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 30),
               ),
             ],
