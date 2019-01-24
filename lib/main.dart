@@ -14,9 +14,6 @@ class App extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Dartask',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
       home: TaskGroupsPage(),
     );
   }
