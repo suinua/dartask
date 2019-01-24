@@ -49,7 +49,9 @@ class _TaskListPageState extends State<TaskListPage> {
               children: <Widget>[
                 IconButton(icon: Icon(Icons.menu), onPressed: () {}),
                 IconButton(
-                  icon: showCompleted ? Icon(Icons.keyboard_arrow_down) : Icon(Icons.keyboard_arrow_up),
+                  icon: showCompleted
+                      ? Icon(Icons.keyboard_arrow_down)
+                      : Icon(Icons.keyboard_arrow_up),
                   onPressed: () {
                     setState(() {
                       showCompleted = !showCompleted;
@@ -59,12 +61,10 @@ class _TaskListPageState extends State<TaskListPage> {
               ],
             ),
             AnimatedContainer(
-                duration: Duration(milliseconds: 300),
-                height: showCompleted ? 200 : 0,
-                child: _buildTaskList(widget.taskGroup
-                    .getTaskList()
-                    .where((Task task) => task.isComplete)
-                    .toList())),
+              duration: Duration(milliseconds: 300),
+              height: showCompleted ? 200 : 0,
+              child: _buildTaskList(widget.taskGroup.completedTaskList()),
+            ),
           ],
         ),
       ),
@@ -91,10 +91,8 @@ class _TaskListPageState extends State<TaskListPage> {
           ),
           Divider(),
           Expanded(
-              child: _buildTaskList(widget.taskGroup
-                  .getTaskList()
-                  .where((Task task) => !task.isComplete)
-                  .toList())),
+            child: _buildTaskList(widget.taskGroup.notCompletedTaskList()),
+          ),
         ],
       ),
     );

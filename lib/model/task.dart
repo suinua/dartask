@@ -5,17 +5,15 @@ import 'package:flutter/material.dart';
 
 class Task {
   String text;
-  bool isComplete;
-
   Widget _checkBox;
+
+  bool isComplete;
 
   Task(this.text)
       : isComplete = false,
         _checkBox = Icon(Icons.radio_button_unchecked);
 
-  Widget asWidget({@required Function update}) {
-    return _TaskWidget(task: this, update: update);
-  }
+  Widget asWidget({@required Function update}) => _TaskWidget(task: this, update: update);
 }
 
 class _TaskWidget extends StatefulWidget {
@@ -42,13 +40,6 @@ class _TaskWidgetState extends State<_TaskWidget> {
             trailing: widget.task._checkBox,
             onTap: canTap
                 ? () {
-                    //todo 他の方法を探す 分かりづらい
-                    //タップ禁止
-                    //チェックボックス変更(setState)
-                    //0.5秒待機
-                    //isComplete変更(setState)
-                    //タップ許可
-
                     canTap = false;
 
                     widget.task._checkBox = widget.task.isComplete

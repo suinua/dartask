@@ -9,7 +9,21 @@ class TaskGroup {
   String title;
   List<Task> _taskList;
 
-  List<Task> getTaskList() => _taskList;
+  List<Task> allTaskList() => _taskList;
+
+  List<Task> completedTaskList() =>
+      _taskList.where((task) => task.isComplete).toList();
+
+  List<Task> notCompletedTaskList() =>
+      _taskList.where((task) => !task.isComplete).toList();
+
+  double getProgress() {
+    if (_taskList.isEmpty) {
+      return 0.0;
+    } else {
+      return completedTaskList().length / _taskList.length * 100;
+    }
+  }
 
   void addTask(Task task) {
     _taskList.add(task);
@@ -34,6 +48,35 @@ class TaskGroup {
                 this.title,
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 30),
+              ),
+              Stack(
+                children: <Widget>[
+                  Container(
+                    height: 15.0,
+                    width: 100.0,
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    ),
+                    child: null,
+                  ),
+                  Container(
+                    height: 15.0,
+                    width: getProgress(),
+                    decoration: BoxDecoration(
+                      color: Colors.redAccent,
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    ),
+                    child: null,
+                  ),
+                  Container(
+                    height: 15.0,
+                    width: 100.0,
+                    child: Center(
+                        child: Text(
+                            '${completedTaskList().length} / ${allTaskList().length}')),
+                  )
+                ],
               ),
             ],
           ),
