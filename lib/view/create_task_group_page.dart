@@ -34,7 +34,7 @@ class _CreateTaskGroupPageState extends State<CreateTaskGroupPage> {
               onPressed: _canSave()
                   ? () {
                       Navigator.pop(context);
-                      bloc.increment.add(TaskGroup(_titleText));
+                      bloc.addGroup.add(TaskGroup(_titleText));
                     }
                   : null,
               child: Text('save'),
