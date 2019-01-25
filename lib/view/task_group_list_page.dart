@@ -1,4 +1,3 @@
-import 'package:dartask/bloc/task_group_list_bloc.dart';
 import 'package:dartask/bloc/task_group_list_bloc_provider.dart';
 import 'package:dartask/model/task_group.dart';
 import 'package:dartask/view/create_task_group_page.dart';

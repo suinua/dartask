@@ -29,13 +29,28 @@ class TaskGroup {
     _taskList.add(task);
   }
 
-  Widget asWidget(BuildContext context) {
+  Map<String, dynamic> asMap() => {
+        'title': this.title,
+        'taskList': _taskList.map((task) => task.asMap()).toList(),
+      };
+
+  Widget asWidget(BuildContext context) => _TaskGroupWidget(taskGroup: this);
+}
+
+class _TaskGroupWidget extends StatelessWidget {
+  final TaskGroup taskGroup;
+
+  const _TaskGroupWidget({Key key, @required this.taskGroup}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (BuildContext context) => TaskListPage(taskGroup: this)),
+              builder: (BuildContext context) =>
+                  TaskListPage(taskGroup: taskGroup)),
         );
       },
       child: Container(
@@ -45,7 +60,7 @@ class TaskGroup {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                this.title,
+                this.taskGroup.title,
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 30),
               ),
@@ -62,7 +77,7 @@ class TaskGroup {
                   ),
                   Container(
                     height: 15.0,
-                    width: getProgress(),
+                    width: taskGroup.getProgress(),
                     decoration: BoxDecoration(
                       color: Colors.redAccent,
                       borderRadius: BorderRadius.all(Radius.circular(10.0)),
@@ -74,7 +89,7 @@ class TaskGroup {
                     width: 100.0,
                     child: Center(
                         child: Text(
-                            '${completedTaskList().length} / ${allTaskList().length}')),
+                            '${taskGroup.completedTaskList().length} / ${taskGroup.allTaskList().length}')),
                   )
                 ],
               ),

@@ -9,11 +9,16 @@ class Task {
 
   bool isComplete;
 
-  Task(this.text)
-      : isComplete = false,
-        _checkBox = Icon(Icons.radio_button_unchecked);
+  Task(this.text, {this.isComplete = false})
+      : _checkBox = Icon(Icons.radio_button_unchecked);
 
-  Widget asWidget({@required Function update}) => _TaskWidget(task: this, update: update);
+  Map<String, dynamic> asMap() => {
+        'text': this.text,
+        'isComplete': this.isComplete,
+      };
+
+  Widget asWidget({@required Function update}) =>
+      _TaskWidget(task: this, update: update);
 }
 
 class _TaskWidget extends StatefulWidget {

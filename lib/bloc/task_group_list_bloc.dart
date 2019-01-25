@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:dartask/model/task_group.dart';
 
 class TaskGroupListBloc {
-  List<TaskGroup> _taskGroupList;
+  List<TaskGroup> _taskGroupList = <TaskGroup>[];
 
   StreamController<List<TaskGroup>> _taskGroupListController =
       StreamController<List<TaskGroup>>();
@@ -20,7 +20,6 @@ class TaskGroupListBloc {
   StreamSink<TaskGroup> get removeGroup => _removeController.sink;
 
   TaskGroupListBloc() {
-    _taskGroupList = <TaskGroup>[];
     _addController.stream.listen(_addGroupHandleLogic);
     _removeController.stream.listen(_removeGroupHandleLogic);
   }
