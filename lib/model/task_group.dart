@@ -1,16 +1,21 @@
 import 'package:dartask/model/task.dart';
 import 'package:dartask/model/user.dart';
 import 'package:dartask/view/task_list_page.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+final _mainReference =
+    FirebaseDatabase.instance.reference().child('task_group_list');
+
 class TaskGroup {
-  TaskGroup(this.owner,this.title) : _taskList = <Task>[];
+  TaskGroup(this.title,{this.owner, this.key}) : _taskList = <Task>[];
+
+  String key;
 
   User owner;
   String title;
   List<Task> _taskList;
-
 
   List<Task> allTaskList() => _taskList;
 
@@ -30,6 +35,7 @@ class TaskGroup {
 
   void addTask(Task task) {
     _taskList.add(task);
+    _mainReference.child(this.key).push().set(task.asMap());
   }
 
   Map<String, dynamic> asMap() => {

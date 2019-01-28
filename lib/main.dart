@@ -33,6 +33,9 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+  final _auth = FirebaseAuth.instance;
+  User _user;
+
   final _googleSignIn = GoogleSignIn(
     scopes: [
       'email',
@@ -40,13 +43,10 @@ class HomePageState extends State<HomePage> {
     ],
   );
 
-  final _auth = FirebaseAuth.instance;
-
-  User _user;
-
   void setUser(User user) {
     setState(() {
       _user = user;
+      loginUser = user;
     });
   }
 
@@ -79,8 +79,7 @@ class HomePageState extends State<HomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (BuildContext context) =>
-                          CreateTaskGroupPage(user: _user)),
+                      builder: (BuildContext context) => CreateTaskGroupPage()),
                 );
               },
             ),

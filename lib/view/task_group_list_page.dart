@@ -1,10 +1,7 @@
-import 'dart:async';
-
 import 'package:dartask/bloc/task_group_list_bloc_provider.dart';
 import 'package:dartask/model/task_group.dart';
 import 'package:dartask/model/user.dart';
 import 'package:dartask/page_title_widget.dart';
-import 'package:dartask/view/create_task_group_page.dart';
 import 'package:dartask/widget_colors.dart';
 import 'package:flutter/material.dart';
 
@@ -51,7 +48,7 @@ class TaskGroupListPage extends StatelessWidget {
           ),
           Container(
             height: 150,
-            child: StreamBuilder(
+            child: StreamBuilder<List<TaskGroup>>(
               stream: bloc.outList,
               builder: (BuildContext context, snapshot) {
                 return _buildTaskGroupList(context, snapshot.data);

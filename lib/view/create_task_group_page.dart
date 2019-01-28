@@ -1,14 +1,10 @@
 import 'package:dartask/bloc/task_group_list_bloc_provider.dart';
 import 'package:dartask/model/task_group.dart';
-import 'package:dartask/model/user.dart';
 import 'package:dartask/page_title_widget.dart';
 import 'package:dartask/widget_colors.dart';
 import 'package:flutter/material.dart';
 
 class CreateTaskGroupPage extends StatefulWidget {
-  final User user;
-
-  const CreateTaskGroupPage({Key key, @required this.user}) : super(key: key);
   @override
   _CreateTaskGroupPageState createState() => _CreateTaskGroupPageState();
 }
@@ -36,8 +32,8 @@ class _CreateTaskGroupPageState extends State<CreateTaskGroupPage> {
               color: WidgetColors.button,
               onPressed: _canSave()
                   ? () {
+                      bloc.addGroup.add(TaskGroup(titleText));
                       Navigator.pop(context);
-                      bloc.addGroup.add(TaskGroup(widget.user,titleText));
                     }
                   : null,
               child: Text('save'),
