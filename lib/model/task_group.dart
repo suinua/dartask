@@ -1,13 +1,16 @@
 import 'package:dartask/model/task.dart';
+import 'package:dartask/model/user.dart';
 import 'package:dartask/view/task_list_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class TaskGroup {
-  TaskGroup(this.title) : _taskList = <Task>[];
+  TaskGroup(this.owner,this.title) : _taskList = <Task>[];
 
+  User owner;
   String title;
   List<Task> _taskList;
+
 
   List<Task> allTaskList() => _taskList;
 

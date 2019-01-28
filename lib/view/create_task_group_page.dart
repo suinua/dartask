@@ -1,9 +1,14 @@
 import 'package:dartask/bloc/task_group_list_bloc_provider.dart';
 import 'package:dartask/model/task_group.dart';
+import 'package:dartask/model/user.dart';
+import 'package:dartask/page_title_widget.dart';
 import 'package:dartask/widget_colors.dart';
 import 'package:flutter/material.dart';
 
 class CreateTaskGroupPage extends StatefulWidget {
+  final User user;
+
+  const CreateTaskGroupPage({Key key, @required this.user}) : super(key: key);
   @override
   _CreateTaskGroupPageState createState() => _CreateTaskGroupPageState();
 }
@@ -11,9 +16,7 @@ class CreateTaskGroupPage extends StatefulWidget {
 class _CreateTaskGroupPageState extends State<CreateTaskGroupPage> {
   String titleText = '';
 
-  bool _canSave() {
-    return titleText.isNotEmpty;
-  }
+  bool _canSave() => titleText.isNotEmpty;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +37,7 @@ class _CreateTaskGroupPageState extends State<CreateTaskGroupPage> {
               onPressed: _canSave()
                   ? () {
                       Navigator.pop(context);
-                      bloc.addGroup.add(TaskGroup(titleText));
+                      bloc.addGroup.add(TaskGroup(widget.user,titleText));
                     }
                   : null,
               child: Text('save'),
@@ -52,43 +55,10 @@ class _CreateTaskGroupPageState extends State<CreateTaskGroupPage> {
         },
         child: Column(
           children: <Widget>[
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    color: Colors.grey,
-                    height: 1.5,
-                  ),
-                ),
-                Expanded(
-                  flex: 4,
-                  child: Center(
-                    child: Text(
-                      'New Task Group',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 30,
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    color: Colors.grey,
-                    height: 1.5,
-                  ),
-                ),
-              ],
-            ),
+            PageTitle(title: 'New Task Group', size: 30),
             Padding(padding: const EdgeInsets.only(bottom: 50)),
             Theme(
-              data: ThemeData(
-                primaryColor: WidgetColors.border,
-              ),
+              data: ThemeData(primaryColor: WidgetColors.border),
               child: TextField(
                 decoration: InputDecoration(
                   labelText: 'Title',
