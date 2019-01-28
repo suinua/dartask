@@ -41,7 +41,6 @@ class TaskGroupListBloc {
   }
 
   void _addGroupHandleLogic(data) {
-    print('---add group handle loginc---');
     _mainReference.push().set(data.asMap());
     _inAdd.add(_taskGroupList);
   }
