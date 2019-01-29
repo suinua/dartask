@@ -5,17 +5,30 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-final _mainReference =
+final _taskGroupListRefe =
     FirebaseDatabase.instance.reference().child('task_group_list');
 
 class TaskGroup {
-  TaskGroup(this.title,{this.owner, this.key}) : _taskList = <Task>[];
-
   String key;
 
   User owner;
   String title;
   List<Task> _taskList;
+
+  TaskGroup(this.title, {this.owner, this.key}) {
+    _taskList = <Task>[];
+
+    final _taskListRef = _taskGroupListRefe.child(key);
+
+    _taskListRef.child(key).onChildAdded.listen((e) {
+      _taskList.add(Task(
+        e.snapshot.value['text'],
+        isComplete: e.snapshot.value['isComplete'],
+        parentKey: this.key,
+        key: e.snapshot.key,
+      ));
+    });
+  }
 
   List<Task> allTaskList() => _taskList;
 
@@ -34,8 +47,7 @@ class TaskGroup {
   }
 
   void addTask(Task task) {
-    _taskList.add(task);
-    _mainReference.child(this.key).push().set(task.asMap());
+    _taskGroupListRefe.child(this.key).push().set(task.asMap());
   }
 
   Map<String, dynamic> asMap() => {
@@ -58,8 +70,9 @@ class _TaskGroupWidget extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (BuildContext context) =>
-                  TaskListPage(taskGroup: taskGroup)),
+            builder: (BuildContext context) =>
+                TaskListPage(taskGroup: taskGroup),
+          ),
         );
       },
       child: Container(

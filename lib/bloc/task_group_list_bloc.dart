@@ -8,13 +8,13 @@ User loginUser;
 class TaskGroupListBloc {
   final List<TaskGroup> _taskGroupList = <TaskGroup>[];
 
-  final _mainReference =
+  final _taskGroupListRef =
   FirebaseDatabase.instance.reference().child('task_group_list');
 
   StreamController<List<TaskGroup>> _taskGroupListController =
       StreamController<List<TaskGroup>>();
 
-  StreamSink<List<TaskGroup>> get _inAdd => _taskGroupListController.sink;
+  StreamSink<List<TaskGroup>> get _set => _taskGroupListController.sink;
 
   Stream<List<TaskGroup>> get outList => _taskGroupListController.stream;
 
@@ -30,24 +30,33 @@ class TaskGroupListBloc {
     _addController.stream.listen(_addGroupHandleLogic);
     _removeController.stream.listen(_removeGroupHandleLogic);
 
-    _mainReference.onChildAdded.listen((event) {
+    _taskGroupListRef.onChildAdded.listen((event) {
        _taskGroupList.add(TaskGroup(
         event.snapshot.value['title'],
         owner: loginUser,
         key: event.snapshot.key,
       ));
-       _inAdd.add(_taskGroupList);
+       _set.add(_taskGroupList);
+    });
+
+    _taskGroupListRef.onChildRemoved.listen((event){
+      _taskGroupList.remove(TaskGroup(
+        event.snapshot.value['title'],
+        owner: loginUser,
+        key: event.snapshot.key,
+      ));
+      _set.add(_taskGroupList);
     });
   }
 
   void _addGroupHandleLogic(data) {
-    _mainReference.push().set(data.asMap());
-    _inAdd.add(_taskGroupList);
+    _taskGroupListRef.push().set(data.asMap());
+    _set.add(_taskGroupList);
   }
 
   void _removeGroupHandleLogic(data) {
     //todo remove
-    _inAdd.add(_taskGroupList);
+    _set.add(_taskGroupList);
   }
 
   void dispose() async {

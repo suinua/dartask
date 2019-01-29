@@ -1,3 +1,4 @@
+import 'package:dartask/view/widgets/floating_button_widget.dart';
 import 'package:dartask/model/task.dart';
 import 'package:dartask/model/task_group.dart';
 import 'package:dartask/widget_colors.dart';
@@ -19,17 +20,15 @@ class _TaskListPageState extends State<TaskListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
-      floatingActionButton: FloatingActionButton.extended(
-        elevation: 4.0,
-        backgroundColor: WidgetColors.button,
-        icon: const Icon(Icons.add),
-        label: Text('Task'),
+      floatingActionButton: FloatingButtonWidget(
+        text: 'Task',
         onPressed: () {
           showModalBottomSheet(
-              context: context,
-              builder: (BuildContext context) {
-                return _CreateTaskBottomSheet();
-              }).then((value) {
+            context: context,
+            builder: (BuildContext context) {
+              return _CreateTaskBottomSheet();
+            },
+          ).then((value) {
             if (value != null) {
               setState(() {
                 widget.taskGroup.addTask(value);

@@ -1,15 +1,20 @@
 import 'dart:async';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Task {
+  final String parentKey;
+  final String key;
+
   String text;
   Widget _checkBox;
 
   bool isComplete;
 
-  Task(this.text, {this.isComplete = false})
+  Task(this.text,
+      {this.isComplete = false, this.parentKey, this.key})
       : _checkBox = Icon(Icons.radio_button_unchecked);
 
   Map<String, dynamic> asMap() => {
@@ -53,7 +58,13 @@ class _TaskWidgetState extends State<_TaskWidget> {
                     widget.update();
 
                     Timer(Duration(milliseconds: 500), () {
+                      final _parentTaskGroupRef = FirebaseDatabase.instance
+                          .reference()
+                          .child('task_group_list')
+                          .child(widget.task.parentKey);
+
                       widget.task.isComplete = !widget.task.isComplete;
+                      _parentTaskGroupRef.child(widget.task.key).update(widget.task.asMap());
 
                       canTap = true;
                       widget.update();
