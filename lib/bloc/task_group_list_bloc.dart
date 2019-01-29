@@ -9,7 +9,7 @@ class TaskGroupListBloc {
   final List<TaskGroup> _taskGroupList = <TaskGroup>[];
 
   final _taskGroupListRef =
-  FirebaseDatabase.instance.reference().child('task_group_list');
+      FirebaseDatabase.instance.reference().child('task_group_list');
 
   StreamController<List<TaskGroup>> _taskGroupListController =
       StreamController<List<TaskGroup>>();
@@ -31,15 +31,18 @@ class TaskGroupListBloc {
     _removeController.stream.listen(_removeGroupHandleLogic);
 
     _taskGroupListRef.onChildAdded.listen((event) {
-       _taskGroupList.add(TaskGroup(
-        event.snapshot.value['title'],
-        owner: loginUser,
-        key: event.snapshot.key,
-      ));
-       _set.add(_taskGroupList);
+      if (event is! String) {
+        _taskGroupList.add(TaskGroup(
+          event.snapshot.value['title'],
+          owner: loginUser,
+          key: event.snapshot.key,
+        ));
+
+        _set.add(_taskGroupList);
+      }
     });
 
-    _taskGroupListRef.onChildRemoved.listen((event){
+    _taskGroupListRef.onChildRemoved.listen((event) {
       _taskGroupList.remove(TaskGroup(
         event.snapshot.value['title'],
         owner: loginUser,
@@ -51,7 +54,6 @@ class TaskGroupListBloc {
 
   void _addGroupHandleLogic(data) {
     _taskGroupListRef.push().set(data.asMap());
-    _set.add(_taskGroupList);
   }
 
   void _removeGroupHandleLogic(data) {

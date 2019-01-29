@@ -17,17 +17,31 @@ class TaskGroup {
 
   TaskGroup(this.title, {this.owner, this.key}) {
     _taskList = <Task>[];
+    if (key != null) {
+      final _taskGroupRef = _taskGroupListRefe.child(key);
 
-    final _taskListRef = _taskGroupListRefe.child(key);
+      _taskGroupRef.onChildAdded.listen((event) {
+        if (event.snapshot.value is! String) {
+          _taskList.add(Task(
+            event.snapshot.value['text'],
+            isComplete: event.snapshot.value['isComplete'],
+            parentKey: this.key,
+            key: event.snapshot.key,
+          ));
+        }
+      });
 
-    _taskListRef.child(key).onChildAdded.listen((e) {
-      _taskList.add(Task(
-        e.snapshot.value['text'],
-        isComplete: e.snapshot.value['isComplete'],
-        parentKey: this.key,
-        key: e.snapshot.key,
-      ));
-    });
+      _taskGroupRef.onChildRemoved.listen((event) {
+        if (event.snapshot.value is! String) {
+          _taskList.remove(Task(
+            event.snapshot.value['text'],
+            isComplete: event.snapshot.value['isComplete'],
+            parentKey: this.key,
+            key: event.snapshot.key,
+          ));
+        }
+      });
+    }
   }
 
   List<Task> allTaskList() => _taskList;

@@ -1,3 +1,4 @@
+import 'package:dartask/view/task_group_setting_page.dart';
 import 'package:dartask/view/widgets/floating_button_widget.dart';
 import 'package:dartask/model/task.dart';
 import 'package:dartask/model/task_group.dart';
@@ -70,6 +71,22 @@ class _TaskListPageState extends State<TaskListPage> {
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: Colors.white30,
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(
+              Icons.settings,
+              color: Colors.black26,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => TaskGroupSettingPage(),
+                ),
+              );
+            },
+          ),
+        ],
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.close, color: Colors.black),
@@ -89,6 +106,7 @@ class _TaskListPageState extends State<TaskListPage> {
             ),
           ),
           Divider(),
+          //todo ここに設定画面を表示させる、animatedContainerで
           Expanded(
             child: _buildTaskList(widget.taskGroup.notCompletedTaskList()),
           ),
