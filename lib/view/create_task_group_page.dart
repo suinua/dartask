@@ -1,3 +1,4 @@
+import 'package:dartask/bloc/task_group_list_bloc.dart';
 import 'package:dartask/bloc/task_group_list_bloc_provider.dart';
 import 'package:dartask/model/task_group.dart';
 import 'package:dartask/view/widgets/page_title_widget.dart';
@@ -32,7 +33,7 @@ class _CreateTaskGroupPageState extends State<CreateTaskGroupPage> {
               color: WidgetColors.button,
               onPressed: _canSave()
                   ? () {
-                      bloc.addGroup.add(TaskGroup(titleText));
+                      bloc.addGroup.add(TaskGroup(titleText,owner: loginUser));
                       Navigator.pop(context);
                     }
                   : null,

@@ -37,7 +37,7 @@ enum _DeleteConformDialogAction {
 class _DeleteConformDialog extends StatelessWidget {
   final String taskText;
 
-   _DeleteConformDialog({Key key, this.taskText}) : super(key: key);
+  _DeleteConformDialog({Key key, this.taskText}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +99,11 @@ class _TaskWidgetState extends State<_TaskWidget> {
                           .reference()
                           .child('task_group_list')
                           .child(widget.task.parentKey);
-                      _parentTaskGroupRef.child(widget.task.key).remove().then((_) => widget.update());
+                      _parentTaskGroupRef
+                          .child('task_list')
+                          .child(widget.task.key)
+                          .remove()
+                          .then((_) => widget.update());
                     }
                   });
                 },
@@ -126,6 +130,7 @@ class _TaskWidgetState extends State<_TaskWidget> {
 
                       widget.task.isComplete = !widget.task.isComplete;
                       _parentTaskGroupRef
+                          .child('task_list')
                           .child(widget.task.key)
                           .update(widget.task.asMap());
 

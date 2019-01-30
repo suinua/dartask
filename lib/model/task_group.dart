@@ -22,24 +22,25 @@ class TaskGroup {
     if (key != null) {
       final _taskGroupRef = _taskGroupListRef.child(key);
 
-      _taskGroupRef.onChildChanged.listen((event) {
-        if (event.snapshot.value is String) {
-          title = event.snapshot.value;
-        }
+      _taskGroupRef.child('owner').onChildChanged.listen((event) {
+        title = event.snapshot.value;
       });
-      _taskGroupRef.onChildAdded.listen((event) {
+
+      _taskGroupRef.child('task_list').onChildAdded.listen((event) {
         if (event.snapshot.value is Map) {
           print('add task:${event.snapshot.value}');
-          _taskList.add(Task(
-            event.snapshot.value['text'],
-            isComplete: event.snapshot.value['isComplete'],
-            parentKey: this.key,
-            key: event.snapshot.key,
-          ));
+          if (event.snapshot.key != 'owner') {
+            _taskList.add(Task(
+              event.snapshot.value['text'],
+              isComplete: event.snapshot.value['isComplete'],
+              parentKey: this.key,
+              key: event.snapshot.key,
+            ));
+          }
         }
       });
 
-      _taskGroupRef.onChildRemoved.listen((event) {
+      _taskGroupRef.child('task_list').onChildRemoved.listen((event) {
         if (event.snapshot.value is Map) {
           print('remove task:${event.snapshot.value}');
           _taskList.remove(Task(
@@ -70,12 +71,17 @@ class TaskGroup {
   }
 
   void addTask(Task task) {
-    _taskGroupListRef.child(this.key).push().set(task.asMap());
+    _taskGroupListRef
+        .child(this.key)
+        .child('task_list')
+        .push()
+        .set(task.asMap());
   }
 
   Map<String, dynamic> asMap() => {
+        'owner': this.owner.asMap(),
         'title': this.title,
-        'taskList': _taskList.map((task) => task.asMap()).toList(),
+        'taskList': this._taskList.map((task) => task.asMap()).toList(),
       };
 
   Widget asWidget(BuildContext context) => _TaskGroupWidget(taskGroup: this);

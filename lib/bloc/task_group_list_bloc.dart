@@ -37,9 +37,10 @@ class TaskGroupListBloc {
 
     _taskGroupListRef.onChildAdded.listen((event) {
       print('add task group:${event.snapshot.value}');
+      Map owner = event.snapshot.value['owner'];
       _taskGroupList.add(TaskGroup(
         event.snapshot.value['title'],
-        owner: loginUser,
+        owner: User(name: owner['name'],email: owner['email']),
         key: event.snapshot.key,
       ));
       _set.add(_taskGroupList);
@@ -47,9 +48,10 @@ class TaskGroupListBloc {
 
     _taskGroupListRef.onChildRemoved.listen((event) {
       print('remove task group:${event.snapshot.value}');
+      Map owner = event.snapshot.value['owner'];
       _taskGroupList.remove(TaskGroup(
         event.snapshot.value['title'],
-        owner: loginUser,
+        owner: User(name: owner['name'],email: owner['email']),
         key: event.snapshot.key,
       ));
       _set.add(_taskGroupList);
