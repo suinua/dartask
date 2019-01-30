@@ -22,6 +22,7 @@ class TaskGroup {
 
       _taskGroupRef.onChildAdded.listen((event) {
         if (event.snapshot.value is! String) {
+          print('add task:${event.snapshot.value}');
           _taskList.add(Task(
             event.snapshot.value['text'],
             isComplete: event.snapshot.value['isComplete'],
@@ -33,6 +34,7 @@ class TaskGroup {
 
       _taskGroupRef.onChildRemoved.listen((event) {
         if (event.snapshot.value is! String) {
+          print('remove task:${event.snapshot.value}');
           _taskList.remove(Task(
             event.snapshot.value['text'],
             isComplete: event.snapshot.value['isComplete'],

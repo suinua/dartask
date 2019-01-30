@@ -29,6 +29,37 @@ class Task {
       _TaskWidget(task: this, update: update);
 }
 
+enum _DeleteConformDialogAction {
+  Ok,
+  Cancel,
+}
+
+class _DeleteConformDialog extends StatelessWidget {
+  final String taskText;
+
+   _DeleteConformDialog({Key key, this.taskText}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(taskText),
+      content: Text('タスクを削除しますか？'),
+      actions: <Widget>[
+        FlatButton(
+            onPressed: () {
+              Navigator.pop(context, _DeleteConformDialogAction.Cancel);
+            },
+            child: Text('キャンセル')),
+        FlatButton(
+            onPressed: () {
+              Navigator.pop(context, _DeleteConformDialogAction.Ok);
+            },
+            child: Text('削除'))
+      ],
+    );
+  }
+}
+
 class _TaskWidget extends StatefulWidget {
   final Task task;
   final Function update;
@@ -57,12 +88,20 @@ class _TaskWidgetState extends State<_TaskWidget> {
                 color: Colors.red,
                 icon: Icons.restore_from_trash,
                 onTap: () {
-                  final _parentTaskGroupRef = FirebaseDatabase.instance
-                      .reference()
-                      .child('task_group_list')
-                      .child(widget.task.parentKey);
-                  _parentTaskGroupRef.child(widget.task.key).remove();
-                  widget.update();
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return _DeleteConformDialog(taskText: widget.task.text);
+                    },
+                  ).then((value) {
+                    if (value == _DeleteConformDialogAction.Ok) {
+                      final _parentTaskGroupRef = FirebaseDatabase.instance
+                          .reference()
+                          .child('task_group_list')
+                          .child(widget.task.parentKey);
+                      _parentTaskGroupRef.child(widget.task.key).remove().then((_) => widget.update());
+                    }
+                  });
                 },
               ),
             ),
@@ -86,7 +125,9 @@ class _TaskWidgetState extends State<_TaskWidget> {
                           .child(widget.task.parentKey);
 
                       widget.task.isComplete = !widget.task.isComplete;
-                      _parentTaskGroupRef.child(widget.task.key).update(widget.task.asMap());
+                      _parentTaskGroupRef
+                          .child(widget.task.key)
+                          .update(widget.task.asMap());
 
                       canTap = true;
                       widget.update();

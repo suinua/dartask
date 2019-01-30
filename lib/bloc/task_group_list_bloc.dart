@@ -32,6 +32,7 @@ class TaskGroupListBloc {
 
     _taskGroupListRef.onChildAdded.listen((event) {
       if (event is! String) {
+        print('add task group:${event.snapshot.value}');
         _taskGroupList.add(TaskGroup(
           event.snapshot.value['title'],
           owner: loginUser,
@@ -43,6 +44,7 @@ class TaskGroupListBloc {
     });
 
     _taskGroupListRef.onChildRemoved.listen((event) {
+      print('remove task group:${event.snapshot.value}');
       _taskGroupList.remove(TaskGroup(
         event.snapshot.value['title'],
         owner: loginUser,
