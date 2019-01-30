@@ -1,4 +1,4 @@
-import 'package:dartask/view/task_group_setting_widget.dart';
+import 'package:dartask/view/task_group_setting_page.dart';
 import 'package:dartask/view/widgets/floating_button_widget.dart';
 import 'package:dartask/model/task.dart';
 import 'package:dartask/model/task_group.dart';
@@ -16,7 +16,6 @@ class TaskListPage extends StatefulWidget {
 
 class _TaskListPageState extends State<TaskListPage> {
   bool _showCompleted = false;
-  bool _showSettingMenu = false;
 
   @override
   Widget build(BuildContext context) {
@@ -79,13 +78,18 @@ class _TaskListPageState extends State<TaskListPage> {
               color: Colors.black26,
             ),
             onPressed: () {
-              _showSettingMenu = !_showSettingMenu;
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => TaskGroupSettingPage(taskGroup: widget.taskGroup),
+                ),
+              );
             },
           ),
         ],
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.close, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
         ),
       ),
       body: Column(
@@ -102,13 +106,9 @@ class _TaskListPageState extends State<TaskListPage> {
             ),
           ),
           Divider(),
-          //todo ここに設定画面を表示させる、animatedContainerで
-          _showSettingMenu
-              ? TaskGroupSettingWidget()
-              : Expanded(
-                  child:
-                      _buildTaskList(widget.taskGroup.notCompletedTaskList()),
-                ),
+          Expanded(
+            child: _buildTaskList(widget.taskGroup.notCompletedTaskList()),
+          ),
         ],
       ),
     );

@@ -5,7 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-final _taskGroupListRefe =
+final _taskGroupListRef =
     FirebaseDatabase.instance.reference().child('task_group_list');
 
 class TaskGroup {
@@ -15,13 +15,20 @@ class TaskGroup {
   String title;
   List<Task> _taskList;
 
+  bool operator ==(o) => o is TaskGroup && o.key == key;
+
   TaskGroup(this.title, {this.owner, this.key}) {
     _taskList = <Task>[];
     if (key != null) {
-      final _taskGroupRef = _taskGroupListRefe.child(key);
+      final _taskGroupRef = _taskGroupListRef.child(key);
 
+      _taskGroupRef.onChildChanged.listen((event) {
+        if (event.snapshot.value is String) {
+          title = event.snapshot.value;
+        }
+      });
       _taskGroupRef.onChildAdded.listen((event) {
-        if (event.snapshot.value is! String) {
+        if (event.snapshot.value is Map) {
           print('add task:${event.snapshot.value}');
           _taskList.add(Task(
             event.snapshot.value['text'],
@@ -33,7 +40,7 @@ class TaskGroup {
       });
 
       _taskGroupRef.onChildRemoved.listen((event) {
-        if (event.snapshot.value is! String) {
+        if (event.snapshot.value is Map) {
           print('remove task:${event.snapshot.value}');
           _taskList.remove(Task(
             event.snapshot.value['text'],
@@ -63,7 +70,7 @@ class TaskGroup {
   }
 
   void addTask(Task task) {
-    _taskGroupListRefe.child(this.key).push().set(task.asMap());
+    _taskGroupListRef.child(this.key).push().set(task.asMap());
   }
 
   Map<String, dynamic> asMap() => {

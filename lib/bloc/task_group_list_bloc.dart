@@ -22,25 +22,27 @@ class TaskGroupListBloc {
 
   StreamSink<TaskGroup> get addGroup => _addController.sink;
 
+  StreamController<TaskGroup> _updateController = StreamController<TaskGroup>();
+
+  StreamSink<TaskGroup> get updateGroup => _updateController.sink;
+
   StreamController<TaskGroup> _removeController = StreamController<TaskGroup>();
 
   StreamSink<TaskGroup> get removeGroup => _removeController.sink;
 
   TaskGroupListBloc() {
     _addController.stream.listen(_addGroupHandleLogic);
+    _updateController.stream.listen(_updateGroupHandleLogic);
     _removeController.stream.listen(_removeGroupHandleLogic);
 
     _taskGroupListRef.onChildAdded.listen((event) {
-      if (event is! String) {
-        print('add task group:${event.snapshot.value}');
-        _taskGroupList.add(TaskGroup(
-          event.snapshot.value['title'],
-          owner: loginUser,
-          key: event.snapshot.key,
-        ));
-
-        _set.add(_taskGroupList);
-      }
+      print('add task group:${event.snapshot.value}');
+      _taskGroupList.add(TaskGroup(
+        event.snapshot.value['title'],
+        owner: loginUser,
+        key: event.snapshot.key,
+      ));
+      _set.add(_taskGroupList);
     });
 
     _taskGroupListRef.onChildRemoved.listen((event) {
@@ -58,14 +60,18 @@ class TaskGroupListBloc {
     _taskGroupListRef.push().set(data.asMap());
   }
 
+  void _updateGroupHandleLogic(data) {
+    _taskGroupListRef.child(data.key).update(data.asMap());
+  }
+
   void _removeGroupHandleLogic(data) {
-    //todo remove
-    _set.add(_taskGroupList);
+    _taskGroupListRef.child(data.key).remove();
   }
 
   void dispose() async {
     await _taskGroupListController.close();
     await _addController.close();
+    await _updateController.close();
     await _removeController.close();
   }
 }
