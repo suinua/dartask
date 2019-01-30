@@ -1,15 +1,11 @@
 import 'package:dartask/bloc/task_group_list_bloc_provider.dart';
+import 'package:dartask/auth.dart';
 import 'package:dartask/model/task_group.dart';
-import 'package:dartask/model/user.dart';
 import 'package:dartask/view/widgets/page_title_widget.dart';
-import 'package:dartask/widget_colors.dart';
+import 'package:dartask/view/widget_colors.dart';
 import 'package:flutter/material.dart';
 
 class TaskGroupListPage extends StatelessWidget {
-  final User user;
-
-  const TaskGroupListPage({Key key, @required this.user}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     final bloc = TaskGroupListBlocProvider.of(context);
@@ -46,15 +42,17 @@ class TaskGroupListPage extends StatelessWidget {
               )
             ],
           ),
-          Container(
-            height: 150,
-            child: StreamBuilder<List<TaskGroup>>(
-              stream: bloc.outList,
-              builder: (BuildContext context, snapshot) {
-                return _buildTaskGroupList(context, snapshot.data);
-              },
-            ),
-          ),
+          loginUser == null
+              ? Container()
+              : Container(
+                  height: 150,
+                  child: StreamBuilder<List<TaskGroup>>(
+                    stream: bloc.outList,
+                    builder: (BuildContext context, snapshot) {
+                      return _buildTaskGroupList(context, snapshot.data);
+                    },
+                  ),
+                ),
         ],
       ),
     );
@@ -76,7 +74,7 @@ class TaskGroupListPage extends StatelessWidget {
 }
 
 class TaskGroupListBottom extends StatelessWidget {
-   Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return BottomAppBar(
       child: Row(
         mainAxisSize: MainAxisSize.max,

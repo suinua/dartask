@@ -1,20 +1,23 @@
 import 'dart:async';
+import 'package:dartask/auth.dart';
 import 'package:dartask/model/task_group.dart';
 import 'package:dartask/model/user.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-User loginUser;
-
 class TaskGroupListBloc {
   final List<TaskGroup> _taskGroupList = <TaskGroup>[];
 
-  final _taskGroupListRef =
-      FirebaseDatabase.instance.reference().child('task_group_list');
+  final _taskGroupListRef = FirebaseDatabase.instance
+      .reference()
+      .child('task_group_list');//todo
+
+  StreamController<User> _userController = StreamController<User>();
+  StreamSink<User> get setUser => _userController.sink;
 
   StreamController<List<TaskGroup>> _taskGroupListController =
       StreamController<List<TaskGroup>>();
 
-  StreamSink<List<TaskGroup>> get _set => _taskGroupListController.sink;
+  StreamSink<List<TaskGroup>> get _setList => _taskGroupListController.sink;
 
   Stream<List<TaskGroup>> get outList => _taskGroupListController.stream;
 
@@ -34,16 +37,21 @@ class TaskGroupListBloc {
     _addController.stream.listen(_addGroupHandleLogic);
     _updateController.stream.listen(_updateGroupHandleLogic);
     _removeController.stream.listen(_removeGroupHandleLogic);
+    _userController.stream.listen(_setDatabaseHandles);
+  }
 
+  void _setDatabaseHandles(e){
     _taskGroupListRef.onChildAdded.listen((event) {
       print('add task group:${event.snapshot.value}');
       Map owner = event.snapshot.value['owner'];
-      _taskGroupList.add(TaskGroup(
-        event.snapshot.value['title'],
-        owner: User(name: owner['name'],email: owner['email']),
-        key: event.snapshot.key,
-      ));
-      _set.add(_taskGroupList);
+      if (loginUser.email == owner['email']) {
+        _taskGroupList.add(TaskGroup(
+          event.snapshot.value['title'],
+          owner: User(name: owner['name'], email: owner['email']),
+          key: event.snapshot.key,
+        ));
+        _setList.add(_taskGroupList);
+      }
     });
 
     _taskGroupListRef.onChildRemoved.listen((event) {
@@ -51,10 +59,10 @@ class TaskGroupListBloc {
       Map owner = event.snapshot.value['owner'];
       _taskGroupList.remove(TaskGroup(
         event.snapshot.value['title'],
-        owner: User(name: owner['name'],email: owner['email']),
+        owner: User(name: owner['name'], email: owner['email']),
         key: event.snapshot.key,
       ));
-      _set.add(_taskGroupList);
+      _setList.add(_taskGroupList);
     });
   }
 
@@ -71,6 +79,8 @@ class TaskGroupListBloc {
   }
 
   void dispose() async {
+    await _userController.close();
+
     await _taskGroupListController.close();
     await _addController.close();
     await _updateController.close();

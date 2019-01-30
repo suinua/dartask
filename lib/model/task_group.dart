@@ -1,6 +1,6 @@
 import 'package:dartask/model/task.dart';
 import 'package:dartask/model/user.dart';
-import 'package:dartask/view/task_list_page.dart';
+import 'package:dartask/view/pages/task_list_page.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

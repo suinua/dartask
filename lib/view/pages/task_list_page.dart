@@ -1,8 +1,8 @@
-import 'package:dartask/view/task_group_setting_page.dart';
+import 'package:dartask/view/pages/task_group_setting_page.dart';
 import 'package:dartask/view/widgets/floating_button_widget.dart';
 import 'package:dartask/model/task.dart';
 import 'package:dartask/model/task_group.dart';
-import 'package:dartask/widget_colors.dart';
+import 'package:dartask/view/widget_colors.dart';
 import 'package:flutter/material.dart';
 
 class TaskListPage extends StatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:dartask/bloc/task_group_list_bloc_provider.dart';
 import 'package:dartask/model/task_group.dart';
-import 'package:dartask/widget_colors.dart';
+import 'package:dartask/view/widget_colors.dart';
 import 'package:flutter/material.dart';
 
 class TaskGroupSettingPage extends StatefulWidget {
