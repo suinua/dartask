@@ -1,7 +1,8 @@
 import 'package:dartask/bloc/task_group_list_bloc_provider.dart';
+import 'package:dartask/auth.dart';
 import 'package:dartask/model/task_group.dart';
 import 'package:dartask/view/widgets/page_title_widget.dart';
-import 'package:dartask/widget_colors.dart';
+import 'package:dartask/view/widget_colors.dart';
 import 'package:flutter/material.dart';
 
 class CreateTaskGroupPage extends StatefulWidget {
@@ -24,7 +25,7 @@ class _CreateTaskGroupPageState extends State<CreateTaskGroupPage> {
         backgroundColor: Colors.white30,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.close, color: Colors.black),
         ),
         actions: <Widget>[
           Center(
@@ -32,7 +33,7 @@ class _CreateTaskGroupPageState extends State<CreateTaskGroupPage> {
               color: WidgetColors.button,
               onPressed: _canSave()
                   ? () {
-                      bloc.addGroup.add(TaskGroup(titleText));
+                      bloc.addGroup.add(TaskGroup(titleText,owner: loginUser));
                       Navigator.pop(context);
                     }
                   : null,

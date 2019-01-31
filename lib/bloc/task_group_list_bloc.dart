@@ -1,20 +1,20 @@
 import 'dart:async';
+import 'package:dartask/auth.dart';
 import 'package:dartask/model/task_group.dart';
 import 'package:dartask/model/user.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-User loginUser;
-
 class TaskGroupListBloc {
   final List<TaskGroup> _taskGroupList = <TaskGroup>[];
 
-  final _taskGroupListRef =
-      FirebaseDatabase.instance.reference().child('task_group_list');
+  StreamController<User> _userController = StreamController<User>();
+
+  StreamSink<User> get setUser => _userController.sink;
 
   StreamController<List<TaskGroup>> _taskGroupListController =
       StreamController<List<TaskGroup>>();
 
-  StreamSink<List<TaskGroup>> get _set => _taskGroupListController.sink;
+  StreamSink<List<TaskGroup>> get _setList => _taskGroupListController.sink;
 
   Stream<List<TaskGroup>> get outList => _taskGroupListController.stream;
 
@@ -22,48 +22,84 @@ class TaskGroupListBloc {
 
   StreamSink<TaskGroup> get addGroup => _addController.sink;
 
+  StreamController<TaskGroup> _updateController = StreamController<TaskGroup>();
+
+  StreamSink<TaskGroup> get updateGroup => _updateController.sink;
+
   StreamController<TaskGroup> _removeController = StreamController<TaskGroup>();
 
   StreamSink<TaskGroup> get removeGroup => _removeController.sink;
 
   TaskGroupListBloc() {
-    _addController.stream.listen(_addGroupHandleLogic);
-    _removeController.stream.listen(_removeGroupHandleLogic);
+    _userController.stream.listen(_setDatabaseHandles);
+  }
 
-    _taskGroupListRef.onChildAdded.listen((event) {
-      if (event is! String) {
-        _taskGroupList.add(TaskGroup(
-          event.snapshot.value['title'],
-          owner: loginUser,
-          key: event.snapshot.key,
-        ));
+  void _setDatabaseHandles(e) {
+    _FirebaseTaskGroupList _firebaseTaskGroupList =
+        _FirebaseTaskGroupList(onChildAdded: add, onChildRemoved: remove);
 
-        _set.add(_taskGroupList);
-      }
-    });
+    _addController.stream.listen(_firebaseTaskGroupList.add);
+    _updateController.stream.listen(_firebaseTaskGroupList.update);
+    _removeController.stream.listen(_firebaseTaskGroupList.remove);
+  }
 
-    _taskGroupListRef.onChildRemoved.listen((event) {
-      _taskGroupList.remove(TaskGroup(
+  void add(event) {
+    print('add task group:${event.snapshot.value}');
+    Map owner = event.snapshot.value['owner'];
+    if (loginUser.email == owner['email']) {
+      _taskGroupList.add(TaskGroup(
         event.snapshot.value['title'],
-        owner: loginUser,
+        owner: User(name: owner['name'], email: owner['email']),
         key: event.snapshot.key,
       ));
-      _set.add(_taskGroupList);
-    });
+      _setList.add(_taskGroupList);
+    }
   }
 
-  void _addGroupHandleLogic(data) {
-    _taskGroupListRef.push().set(data.asMap());
-  }
-
-  void _removeGroupHandleLogic(data) {
-    //todo remove
-    _set.add(_taskGroupList);
+  void remove(event) {
+    print('remove task group:${event.snapshot.value}');
+    Map owner = event.snapshot.value['owner'];
+    _taskGroupList.remove(TaskGroup(
+      event.snapshot.value['title'],
+      owner: User(name: owner['name'], email: owner['email']),
+      key: event.snapshot.key,
+    ));
+    _setList.add(_taskGroupList);
   }
 
   void dispose() async {
+    await _userController.close();
+
     await _taskGroupListController.close();
     await _addController.close();
+    await _updateController.close();
     await _removeController.close();
+  }
+}
+
+class _FirebaseTaskGroupList {
+  DatabaseReference _taskGroupListRef;
+
+  final Function(dynamic) onChildAdded;
+  final Function(dynamic) onChildRemoved;
+
+  _FirebaseTaskGroupList({this.onChildAdded, this.onChildRemoved}) {
+    _taskGroupListRef = FirebaseDatabase.instance.reference().child('task_group_list')
+      ..orderByChild('owner').equalTo(loginUser.email);
+
+    _taskGroupListRef.onChildAdded.listen(onChildAdded);
+    _taskGroupListRef.onChildRemoved.listen(onChildRemoved);
+  }
+
+  void remove(TaskGroup data) {
+    _taskGroupListRef.child(data.key).remove();
+  }
+
+  void add(TaskGroup data) {
+    _taskGroupListRef.push().set(data.asMap());
+  }
+
+  void update(TaskGroup data) {
+    _taskGroupListRef.child(data.key).update(data.asMap());
   }
 }

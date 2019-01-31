@@ -1,8 +1,8 @@
-import 'package:dartask/view/task_group_setting_page.dart';
+import 'package:dartask/view/pages/task_group_setting_page.dart';
 import 'package:dartask/view/widgets/floating_button_widget.dart';
 import 'package:dartask/model/task.dart';
 import 'package:dartask/model/task_group.dart';
-import 'package:dartask/widget_colors.dart';
+import 'package:dartask/view/widget_colors.dart';
 import 'package:flutter/material.dart';
 
 class TaskListPage extends StatefulWidget {
@@ -15,7 +15,7 @@ class TaskListPage extends StatefulWidget {
 }
 
 class _TaskListPageState extends State<TaskListPage> {
-  bool showCompleted = false;
+  bool _showCompleted = false;
 
   @override
   Widget build(BuildContext context) {
@@ -49,12 +49,12 @@ class _TaskListPageState extends State<TaskListPage> {
               children: <Widget>[
                 IconButton(icon: Icon(Icons.menu), onPressed: () {}),
                 IconButton(
-                  icon: showCompleted
+                  icon: _showCompleted
                       ? Icon(Icons.keyboard_arrow_down)
                       : Icon(Icons.keyboard_arrow_up),
                   onPressed: () {
                     setState(() {
-                      showCompleted = !showCompleted;
+                      _showCompleted = !_showCompleted;
                     });
                   },
                 ),
@@ -62,7 +62,7 @@ class _TaskListPageState extends State<TaskListPage> {
             ),
             AnimatedContainer(
               duration: Duration(milliseconds: 300),
-              height: showCompleted ? 200 : 0,
+              height: _showCompleted ? 200 : 0,
               child: _buildTaskList(widget.taskGroup.completedTaskList()),
             ),
           ],
@@ -81,7 +81,7 @@ class _TaskListPageState extends State<TaskListPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (BuildContext context) => TaskGroupSettingPage(),
+                  builder: (BuildContext context) => TaskGroupSettingPage(taskGroup: widget.taskGroup),
                 ),
               );
             },
@@ -89,7 +89,7 @@ class _TaskListPageState extends State<TaskListPage> {
         ],
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.close, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
         ),
       ),
       body: Column(
@@ -106,7 +106,6 @@ class _TaskListPageState extends State<TaskListPage> {
             ),
           ),
           Divider(),
-          //todo ここに設定画面を表示させる、animatedContainerで
           Expanded(
             child: _buildTaskList(widget.taskGroup.notCompletedTaskList()),
           ),
