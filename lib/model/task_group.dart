@@ -5,10 +5,9 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-final _taskGroupListRef =
-    FirebaseDatabase.instance.reference().child('task_group_list');
-
 class TaskGroup {
+  DatabaseReference _taskGroupRef;
+
   String key;
 
   User owner;
@@ -20,7 +19,10 @@ class TaskGroup {
   TaskGroup(this.title, {this.owner, this.key}) {
     _taskList = <Task>[];
     if (key != null) {
-      final _taskGroupRef = _taskGroupListRef.child(key);
+      _taskGroupRef = FirebaseDatabase.instance
+          .reference()
+          .child('task_group_list')
+          .child(this.key);
 
       _taskGroupRef
           .child('owner')
@@ -31,23 +33,9 @@ class TaskGroup {
       });
 
       _taskGroupRef.child('task_list').onChildAdded.listen((event) {
-        if (event.snapshot.value is Map) {
-          print('add task:${event.snapshot.value}');
-          if (event.snapshot.key != 'owner') {
-            _taskList.add(Task(
-              event.snapshot.value['text'],
-              isComplete: event.snapshot.value['isComplete'],
-              parentKey: this.key,
-              key: event.snapshot.key,
-            ));
-          }
-        }
-      });
-
-      _taskGroupRef.child('task_list').onChildRemoved.listen((event) {
-        if (event.snapshot.value is Map) {
-          print('remove task:${event.snapshot.value}');
-          _taskList.remove(Task(
+        print('add task:${event.snapshot.value}');
+        if (event.snapshot.key != 'owner') {
+          _taskList.add(Task(
             event.snapshot.value['text'],
             isComplete: event.snapshot.value['isComplete'],
             parentKey: this.key,
@@ -55,7 +43,21 @@ class TaskGroup {
           ));
         }
       });
+
+      _taskGroupRef.child('task_list').onChildRemoved.listen((event) {
+        print('remove task:${event.snapshot.value}');
+        _taskList.remove(Task(
+          event.snapshot.value['text'],
+          isComplete: event.snapshot.value['isComplete'],
+          parentKey: this.key,
+          key: event.snapshot.key,
+        ));
+      });
     }
+  }
+
+  void addTask(Task task) {
+    _taskGroupRef.child('task_list').push().set(task.asMap());
   }
 
   List<Task> allTaskList() => _taskList;
@@ -72,14 +74,6 @@ class TaskGroup {
     } else {
       return completedTaskList().length / _taskList.length * 100;
     }
-  }
-
-  void addTask(Task task) {
-    _taskGroupListRef
-        .child(this.key)
-        .child('task_list')
-        .push()
-        .set(task.asMap());
   }
 
   Map<String, dynamic> asMap() => {

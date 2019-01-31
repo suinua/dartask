@@ -7,8 +7,6 @@ import 'package:firebase_database/firebase_database.dart';
 class TaskGroupListBloc {
   final List<TaskGroup> _taskGroupList = <TaskGroup>[];
 
-  DatabaseReference _taskGroupListRef = FirebaseDatabase.instance.reference();
-
   StreamController<User> _userController = StreamController<User>();
 
   StreamSink<User> get setUser => _userController.sink;
@@ -33,51 +31,40 @@ class TaskGroupListBloc {
   StreamSink<TaskGroup> get removeGroup => _removeController.sink;
 
   TaskGroupListBloc() {
-    _addController.stream.listen(_addGroupHandleLogic);
-    _updateController.stream.listen(_updateGroupHandleLogic);
-    _removeController.stream.listen(_removeGroupHandleLogic);
     _userController.stream.listen(_setDatabaseHandles);
   }
 
   void _setDatabaseHandles(e) {
-    _taskGroupListRef = _taskGroupListRef.child('task_list')
-      ..orderByChild('owner').equalTo(loginUser.email);
+    _FirebaseTaskGroupList _firebaseTaskGroupList =
+        _FirebaseTaskGroupList(onChildAdded: add, onChildRemoved: remove);
 
-    _taskGroupListRef.onChildAdded.listen((event) {
-      print('add task group:${event.snapshot.value}');
-      Map owner = event.snapshot.value['owner'];
-      if (loginUser.email == owner['email']) {
-        _taskGroupList.add(TaskGroup(
-          event.snapshot.value['title'],
-          owner: User(name: owner['name'], email: owner['email']),
-          key: event.snapshot.key,
-        ));
-        _setList.add(_taskGroupList);
-      }
-    });
+    _addController.stream.listen(_firebaseTaskGroupList.add);
+    _updateController.stream.listen(_firebaseTaskGroupList.update);
+    _removeController.stream.listen(_firebaseTaskGroupList.remove);
+  }
 
-    _taskGroupListRef.onChildRemoved.listen((event) {
-      print('remove task group:${event.snapshot.value}');
-      Map owner = event.snapshot.value['owner'];
-      _taskGroupList.remove(TaskGroup(
+  void add(event) {
+    print('add task group:${event.snapshot.value}');
+    Map owner = event.snapshot.value['owner'];
+    if (loginUser.email == owner['email']) {
+      _taskGroupList.add(TaskGroup(
         event.snapshot.value['title'],
         owner: User(name: owner['name'], email: owner['email']),
         key: event.snapshot.key,
       ));
       _setList.add(_taskGroupList);
-    });
+    }
   }
 
-  void _addGroupHandleLogic(data) {
-    _taskGroupListRef.push().set(data.asMap());
-  }
-
-  void _updateGroupHandleLogic(data) {
-    _taskGroupListRef.child(data.key).update(data.asMap());
-  }
-
-  void _removeGroupHandleLogic(data) {
-    _taskGroupListRef.child(data.key).remove();
+  void remove(event) {
+    print('remove task group:${event.snapshot.value}');
+    Map owner = event.snapshot.value['owner'];
+    _taskGroupList.remove(TaskGroup(
+      event.snapshot.value['title'],
+      owner: User(name: owner['name'], email: owner['email']),
+      key: event.snapshot.key,
+    ));
+    _setList.add(_taskGroupList);
   }
 
   void dispose() async {
@@ -87,5 +74,32 @@ class TaskGroupListBloc {
     await _addController.close();
     await _updateController.close();
     await _removeController.close();
+  }
+}
+
+class _FirebaseTaskGroupList {
+  DatabaseReference _taskGroupListRef;
+
+  final Function(dynamic) onChildAdded;
+  final Function(dynamic) onChildRemoved;
+
+  _FirebaseTaskGroupList({this.onChildAdded, this.onChildRemoved}) {
+    _taskGroupListRef = FirebaseDatabase.instance.reference().child('task_group_list')
+      ..orderByChild('owner').equalTo(loginUser.email);
+
+    _taskGroupListRef.onChildAdded.listen(onChildAdded);
+    _taskGroupListRef.onChildRemoved.listen(onChildRemoved);
+  }
+
+  void remove(TaskGroup data) {
+    _taskGroupListRef.child(data.key).remove();
+  }
+
+  void add(TaskGroup data) {
+    _taskGroupListRef.push().set(data.asMap());
+  }
+
+  void update(TaskGroup data) {
+    _taskGroupListRef.child(data.key).update(data.asMap());
   }
 }
