@@ -22,7 +22,11 @@ class TaskGroup {
     if (key != null) {
       final _taskGroupRef = _taskGroupListRef.child(key);
 
-      _taskGroupRef.child('owner').onChildChanged.listen((event) {
+      _taskGroupRef
+          .child('owner')
+          .child('title')
+          .onChildChanged
+          .listen((event) {
         title = event.snapshot.value;
       });
 

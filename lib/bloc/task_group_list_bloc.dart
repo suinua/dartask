@@ -7,11 +7,10 @@ import 'package:firebase_database/firebase_database.dart';
 class TaskGroupListBloc {
   final List<TaskGroup> _taskGroupList = <TaskGroup>[];
 
-  final _taskGroupListRef = FirebaseDatabase.instance
-      .reference()
-      .child('task_group_list');//todo
+  DatabaseReference _taskGroupListRef = FirebaseDatabase.instance.reference();
 
   StreamController<User> _userController = StreamController<User>();
+
   StreamSink<User> get setUser => _userController.sink;
 
   StreamController<List<TaskGroup>> _taskGroupListController =
@@ -40,7 +39,10 @@ class TaskGroupListBloc {
     _userController.stream.listen(_setDatabaseHandles);
   }
 
-  void _setDatabaseHandles(e){
+  void _setDatabaseHandles(e) {
+    _taskGroupListRef = _taskGroupListRef.child('task_list')
+      ..orderByChild('owner').equalTo(loginUser.email);
+
     _taskGroupListRef.onChildAdded.listen((event) {
       print('add task group:${event.snapshot.value}');
       Map owner = event.snapshot.value['owner'];
