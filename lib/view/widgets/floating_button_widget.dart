@@ -1,4 +1,4 @@
-import 'package:dartask/widget_colors.dart';
+import 'package:dartask/view/widget_colors.dart';
 import 'package:flutter/material.dart';
 
 class FloatingButtonWidget extends StatelessWidget {
